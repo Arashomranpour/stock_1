@@ -65,15 +65,12 @@ past_100=data_training.tail(100)
 final_df=past_100.append(data_test,ignore_index=True)
 input_data=scaler.fit_transform(final_df)
 
+
 x_test=[]
 y_test=[]
 for i in range(100,input_data.shape[0]):
     x_test.append(input_data[i-100:i])
     y_test.append(input_data[i,0])
-# x_test.shape
-#     X_train.append(data_training_array[i-100:i])
-    # Y_train.append(data_training_array[i:0])
-    
 
 x_test=np.array(x_test)
 y_test=np.array(y_test)
@@ -84,12 +81,31 @@ y_predict=model.predict(x_test)
 scale_factor=1 / 0.01754694
 y_predict=scale_factor*y_predict
 y_test=scale_factor* y_test
-
+# y_predict=y_predict
 st.subheader("Prediction vs actual")
 fig2=plt.figure(figsize=(12,6))
+
+
+
+past_100 = final_df.tail(100)
+input_data = scaler.transform(past_100)
+future_predictions = []
+for i in range(100):
+    x_input = input_data[-100:].reshape((1, 100, 1))
+    y_pred = model.predict(x_input)
+    future_predictions.append(y_pred[0, 0])
+    input_data = np.append(input_data, y_pred)
+    input_data = np.delete(input_data, 0)
+future_predictions = np.array(future_predictions)
+future_predictions = future_predictions * scale_factor
+
+
 plt.plot(y_test,"g",label="Original")
-plt.plot(y_predict,"b",label="Predicted")
+plt.plot(range(-10,-10+len(y_predict)),y_predict,"b",label="Predicted")
+
+plt.plot(range(len(y_test), len(y_test) + len(future_predictions)), future_predictions, "r", label="Predict")
 plt.xlabel("Time")
 plt.ylabel("Price")
 plt.legend()
+plt.show()
 st.pyplot(fig2)
