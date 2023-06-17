@@ -1,0 +1,6 @@
+pandas
+yfinance
+datetime
+keras.models
+streamlit
+matplotlib
