@@ -4,3 +4,4 @@ datetime
 keras.models
 streamlit
 matplotlib
+tensorflow
