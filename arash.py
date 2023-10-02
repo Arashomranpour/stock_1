@@ -2,6 +2,8 @@ import pandas as pd
 import yfinance as yf
 from datetime import datetime
 from keras.models import load_model
+# from tensorflow.keras.saving import load_model
+import tensorflow as tf
 import streamlit as st
 import matplotlib.pyplot as plt
 
@@ -58,11 +60,10 @@ for i in range(100,data_training_array.shape[0]):
     
 my_x_train=np.array(x_train)
 my_y_train=np.array(y_train)
-
-model=load_model("./keras_model.h5")
+model = load_model('./keras_model.h5')
 
 past_100=data_training.tail(100)
-final_df=past_100.append(data_test,ignore_index=True)
+final_df=pd.concat([past_100,data_test],ignore_index=True)
 input_data=scaler.fit_transform(final_df)
 
 
@@ -90,12 +91,16 @@ fig2=plt.figure(figsize=(12,6))
 past_100 = final_df.tail(100)
 input_data = scaler.transform(past_100)
 future_predictions = []
+
+
 for i in range(100):
     x_input = input_data[-100:].reshape((1, 100, 1))
     y_pred = model.predict(x_input)
     future_predictions.append(y_pred[0, 0])
     input_data = np.append(input_data, y_pred)
     input_data = np.delete(input_data, 0)
+    
+    
 future_predictions = np.array(future_predictions)
 future_predictions = future_predictions * scale_factor
 
@@ -103,7 +108,7 @@ future_predictions = future_predictions * scale_factor
 plt.plot(y_test,"g",label="Original")
 plt.plot(range(-10,-10+len(y_predict)),y_predict,"b",label="Predicted")
 
-plt.plot(range(len(y_test), len(y_test) + len(future_predictions)), future_predictions, "r", label="Predict")
+plt.plot(range(len(y_test), len(y_test) + len(future_predictions)), future_predictions, "r--", label="Predict")
 plt.xlabel("Time")
 plt.ylabel("Price")
 plt.legend()
