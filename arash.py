@@ -63,6 +63,9 @@ my_y_train=np.array(y_train)
 model = load_model('./keras_model.h5')
 
 past_100=data_training.tail(100)
+<<<<<<< HEAD:arash.py
+=======
+>>>>>>> 50ad7077f591e19b04f0c91478fdd83867bef4c2:app.py
 final_df=pd.concat([past_100,data_test],ignore_index=True)
 input_data=scaler.fit_transform(final_df)
 
